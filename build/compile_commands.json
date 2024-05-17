@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/home/bence/Documents/CodingProjects/C++/opengl/build",
+  "command": "/usr/bin/clang++ -I/home/bence/Documents/CodingProjects/C++/opengl/glfw-3.4/include -I/home/bence/Documents/CodingProjects/C++/opengl/include -flto -g -o CMakeFiles/opengl-tutorial.dir/main.cpp.o -c /home/bence/Documents/CodingProjects/C++/opengl/main.cpp",
+  "file": "/home/bence/Documents/CodingProjects/C++/opengl/main.cpp",
+  "output": "CMakeFiles/opengl-tutorial.dir/main.cpp.o"
+},
+{
+  "directory": "/home/bence/Documents/CodingProjects/C++/opengl/build",
+  "command": "/usr/bin/clang -I/home/bence/Documents/CodingProjects/C++/opengl/glfw-3.4/include -I/home/bence/Documents/CodingProjects/C++/opengl/include -flto -g -o CMakeFiles/opengl-tutorial.dir/glad.c.o -c /home/bence/Documents/CodingProjects/C++/opengl/glad.c",
+  "file": "/home/bence/Documents/CodingProjects/C++/opengl/glad.c",
+  "output": "CMakeFiles/opengl-tutorial.dir/glad.c.o"
+}
+]
