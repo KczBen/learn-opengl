@@ -8,5 +8,5 @@ out vec3 customColor;
 void main() {
    vec3 offsetPos = vec3(aPos.x+offset, aPos.y, aPos.z);
    gl_Position = vec4(offsetPos, 1.0);
-   customColor = aColor;
+   customColor = offsetPos;
 }
