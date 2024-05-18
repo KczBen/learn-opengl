@@ -40,7 +40,7 @@ class Shader {
             }
             
             catch(std::ifstream::failure e) {
-                std::cout << "Error: Failed to read shader file\n";
+                std::cout << "Error: Failed to read shader file" << std::endl;
             }
 
             const char* vShaderCode = vertexCode.c_str();
@@ -48,19 +48,39 @@ class Shader {
 
             // Compile and link
             unsigned int vertexShader, fragmentShader;
-            // TODO: Compiler error checking
+            int successVertex;
+            char infoLogVertex[512];
             vertexShader = glCreateShader(GL_VERTEX_SHADER);
             glShaderSource(vertexShader, 1, &vShaderCode, NULL);
             glCompileShader(vertexShader);
+            glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &successVertex);
+            if (!successVertex) {
+                glGetShaderInfoLog(vertexShader, 512, NULL, infoLogVertex);
+                std::cout << "Error: Failed to compile vertex shader" << infoLogVertex << std::endl;
+            }
 
+            int successFragment;
+            char infoLogFragment[512];
             fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
             glShaderSource(fragmentShader, 1, &fShaderCode, NULL);
             glCompileShader(fragmentShader);
-            // TODO: Linker error checking
+            glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &successFragment);
+            if (!successFragment) {
+                glGetShaderInfoLog(fragmentShader, 512, NULL, infoLogFragment);
+                std::cout << "Error: Failed to compile fragment shader" << infoLogFragment << std::endl;
+            }
+            
+            int successLinker;
+            char infoLogLinker[512];
             ID = glCreateProgram();
             glAttachShader(ID, vertexShader);
             glAttachShader(ID, fragmentShader);
             glLinkProgram(ID);
+            glGetProgramiv(ID, GL_LINK_STATUS, &successLinker);
+            if (!successLinker) {
+                glGetProgramInfoLog(ID, 512, NULL, infoLogLinker);
+                std::cout << "Error: Failed to link shader program" << infoLogLinker << std::endl;
+            }
 
             glDeleteShader(vertexShader);
             glDeleteShader(fragmentShader);
