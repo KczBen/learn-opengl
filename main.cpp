@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <KHR/khrplatform.h>
+#include <shader.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -12,20 +13,11 @@ bool wireframe = false;
 
 // Triangle
 float vertices[] {
+    // Position         // Colour
     -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
      0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
      0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f
 };  
-
-const char* vertexShaderSource = 
-"#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location = 1) in vec3 aColor;\n"
-"out vec3 customColor;\n"
-"void main() {\n"
-"   gl_Position = vec4(aPos, 1.0);\n"
-"   customColor = aColor;\n"
-"}\0";
 
 const char* fragmentShaderSource = 
 "#version 330 core\n"
@@ -33,7 +25,7 @@ const char* fragmentShaderSource =
 "out vec4 FragColor;\n"
 "void main() {\n"
 "   FragColor = vec4(customColor, 1.0f);\n"
-"}\n\0";
+"}\0";
 
 int main() {
     glfwInit();
@@ -60,31 +52,6 @@ int main() {
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    // Create vertex shader
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    // Create orange fragment (pixel) shader
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    // Create shader programs
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-
-    // Link compiled shaders to the program
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    // Shaders are linked, no longer need them
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
     // Create vertex buffer, vertex array and element buffer
     unsigned int VBO;
     unsigned int VAO;
@@ -105,14 +72,15 @@ int main() {
     // Colour
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
-    glUseProgram(shaderProgram);
+
+    Shader customShader("../shaders/vertex.shader", "../shaders/fragment.shader");
+    customShader.use();
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
         // Background colour
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
