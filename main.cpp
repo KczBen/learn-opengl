@@ -19,14 +19,6 @@ float vertices[] {
      0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f
 };  
 
-const char* fragmentShaderSource = 
-"#version 330 core\n"
-"in vec3 customColor;\n"
-"out vec4 FragColor;\n"
-"void main() {\n"
-"   FragColor = vec4(customColor, 1.0f);\n"
-"}\0";
-
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
