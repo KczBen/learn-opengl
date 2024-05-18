@@ -2,7 +2,7 @@
 
 ## Progress
 
-Current chapter: Shaders
+Current chapter: Textures
 
 - [x] Introduction
 - [ ] Getting Started
@@ -10,7 +10,7 @@ Current chapter: Shaders
   - [x] Creating a window
   - [x] Hello Window
   - [x] Hello Triangle
-  - [ ] Shaders
+  - [x] Shaders
   - [ ] Textures
   - [ ] Transformations
   - [ ] Coordinate Systems
