@@ -75,6 +75,7 @@ int main() {
 
     Shader customShader("../shaders/vertex.shader", "../shaders/fragment.shader");
     customShader.use();
+    customShader.setFloat("offset", 0.5f);
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
