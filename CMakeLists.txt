@@ -4,7 +4,7 @@ project(opengl-tutorial VERSION 0.1.0 LANGUAGES C CXX)
 include(CTest)
 enable_testing()
 
-add_executable(opengl-tutorial main.cpp glad.c)
+add_executable(opengl-tutorial main.cpp glad.c stb_image.cpp)
 target_include_directories(opengl-tutorial PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_directories(opengl-tutorial PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 target_link_libraries(opengl-tutorial glfw)
