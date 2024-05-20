@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <KHR/khrplatform.h>
 #include <shader.hpp>
+#include <stb_image.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -43,6 +44,16 @@ int main() {
     glViewport(0, 0, 800, 600);
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    // Texture loading
+    int width, height, channels;
+    unsigned char* data = stbi_load("../textures/container.jpg", &width, &height, &channels, 0);
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(data);
 
     // Create vertex buffer, vertex array and element buffer
     unsigned int VBO;
