@@ -4,20 +4,33 @@
 #include <GLFW/glfw3.h>
 #include <KHR/khrplatform.h>
 #include <shader.hpp>
+#include <stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+enum DIRECTION {UP, DOWN};
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+void processInput(GLFWwindow* window, Shader shader);
 void toggleWireframe();
+void changeMixture(DIRECTION, Shader shader);
 
 bool wireframe = false;
+float mixture = 0.5f;
 
-// Triangle
 float vertices[] {
-    // Position         // Colour
-    -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-     0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-     0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f
-};  
+    // positions          // colors           // texture coords
+     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 0.0f,   // top right
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,   // bottom right
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f,   // bottom left
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 0.0f    // top left 
+};
+
+unsigned int indices[] {
+    0, 1, 3,
+    1, 2, 3
+};
 
 int main() {
     glfwInit();
@@ -44,6 +57,34 @@ int main() {
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+    // Texture loading
+    int width, height, channels;
+    unsigned char* data;
+
+    // Set texture parameters
+    data = stbi_load("../textures/container.jpg", &width, &height, &channels, 0);
+    unsigned int texture1;
+    glGenTextures(1, &texture1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    data = stbi_load("../textures/awesomeface.png", &width, &height, &channels, 0);
+    unsigned int texture2;
+    glGenTextures(1, &texture2);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(data);
+
     // Create vertex buffer, vertex array and element buffer
     unsigned int VBO;
     unsigned int VAO;
@@ -57,26 +98,59 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
     // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     // Colour
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    // Texture coordinates
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     Shader customShader("../shaders/vertex.shader", "../shaders/fragment.shader");
     customShader.use();
-    customShader.setFloat("offset", 0.5f);
+    customShader.setInt("texture1", 0);
+    customShader.setInt("texture2", 1);
+    customShader.setFloat("mixture", mixture);
+
+    glm::mat4 trans;
+    unsigned int transformLocation;
 
     while (!glfwWindowShouldClose(window)) {
-        processInput(window);
+        processInput(window, customShader);
         // Background colour
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        // Matrix stuff
+        trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        transformLocation = glGetUniformLocation(customShader.ID, "transform");
+        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        // Second box
+        trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
+        trans = glm::scale(trans, 0.5f+(float)sin((float)glfwGetTime())/2*glm::vec3(1.0f, 1.0f, 1.0f));
+
+        transformLocation = glGetUniformLocation(customShader.ID, "transform");
+        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -89,13 +163,21 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow* window) {
+void processInput(GLFWwindow* window, Shader shader) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
 
     if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS) {
         toggleWireframe();
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        changeMixture(UP, shader); 
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        changeMixture(DOWN, shader); 
     }
 }
 
@@ -108,5 +190,26 @@ void toggleWireframe() {
     else {
         wireframe = false;
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+}
+
+void changeMixture(DIRECTION key, Shader shader) {
+    switch (key) {
+    case UP:
+        if (mixture < 1.0f) {
+            mixture += 0.1f;
+        }
+        shader.setFloat("mixture", mixture);
+        break;
+    
+    case DOWN:
+        if (mixture > 0.0f) {
+            mixture -= 0.1f;
+        }
+        shader.setFloat("mixture", mixture);
+        break;
+        
+    default:
+        break;
     }
 }
