@@ -146,7 +146,7 @@ int main() {
         // Second box
         trans = glm::mat4(1.0f);
         trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
-        trans = glm::scale(trans, 0.5f+(float)sin((float)glfwGetTime())/2*glm::vec3(1.0f, 1.0f, 1.0f));
+        trans = glm::scale(trans, 0.5f+(float)sin(glfwGetTime())/2*glm::vec3(1.0f, 1.0f, 1.0f));
 
         transformLocation = glGetUniformLocation(customShader.ID, "transform");
         glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
