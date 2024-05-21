@@ -2,7 +2,7 @@
 
 ## Progress
 
-Current chapter: Textures
+Current chapter: Coordinate Systems
 
 - [x] Introduction
 - [ ] Getting Started
@@ -11,7 +11,7 @@ Current chapter: Textures
   - [x] Hello Window
   - [x] Hello Triangle
   - [x] Shaders
-  - [ ] Textures
-  - [ ] Transformations
+  - [x] Textures
+  - [x] Transformations
   - [ ] Coordinate Systems
   - [ ] Camera
