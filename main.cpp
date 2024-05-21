@@ -119,6 +119,9 @@ int main() {
     customShader.setInt("texture2", 1);
     customShader.setFloat("mixture", mixture);
 
+    glm::mat4 trans;
+    unsigned int transformLocation;
+
     while (!glfwWindowShouldClose(window)) {
         processInput(window, customShader);
         // Background colour
@@ -126,11 +129,11 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Matrix stuff
-        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::mat4(1.0f);
         trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
         trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
 
-        unsigned int transformLocation = glGetUniformLocation(customShader.ID, "transform");
+        transformLocation = glGetUniformLocation(customShader.ID, "transform");
         glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
 
         glActiveTexture(GL_TEXTURE0);
@@ -138,6 +141,15 @@ int main() {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
         glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        // Second box
+        trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
+        trans = glm::scale(trans, 0.5f+(float)sin((float)glfwGetTime())/2*glm::vec3(1.0f, 1.0f, 1.0f));
+
+        transformLocation = glGetUniformLocation(customShader.ID, "transform");
+        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
