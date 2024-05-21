@@ -5,6 +5,9 @@
 #include <KHR/khrplatform.h>
 #include <shader.hpp>
 #include <stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 enum DIRECTION {UP, DOWN};
 
@@ -56,12 +59,13 @@ int main() {
 
     // Texture loading
     int width, height, channels;
-    unsigned char* data = stbi_load("../textures/container.jpg", &width, &height, &channels, 0);
+    unsigned char* data;
+
+    // Set texture parameters
+    data = stbi_load("../textures/container.jpg", &width, &height, &channels, 0);
     unsigned int texture1;
     glGenTextures(1, &texture1);
     glBindTexture(GL_TEXTURE_2D, texture1);
-
-    //Set texture parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -109,8 +113,6 @@ int main() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
     glEnableVertexAttribArray(2);
 
-
-
     Shader customShader("../shaders/vertex.shader", "../shaders/fragment.shader");
     customShader.use();
     customShader.setInt("texture1", 0);
@@ -122,6 +124,14 @@ int main() {
         // Background colour
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        // Matrix stuff
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        unsigned int transformLocation = glGetUniformLocation(customShader.ID, "transform");
+        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
