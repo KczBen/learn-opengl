@@ -6,18 +6,22 @@
 #include <shader.hpp>
 #include <stb_image.h>
 
+enum DIRECTION {UP, DOWN};
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+void processInput(GLFWwindow* window, Shader shader);
 void toggleWireframe();
+void changeMixture(DIRECTION, Shader shader);
 
 bool wireframe = false;
+float mixture = 0.5f;
 
 float vertices[] {
     // positions          // colors           // texture coords
-     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   0.5f, 0.4f,   // top right
-     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   0.5f, 0.5f,   // bottom right
-    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.4f, 0.5f,   // bottom left
-    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.4f, 0.4f    // top left 
+     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 0.0f,   // top right
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f,   // bottom right
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f,   // bottom left
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 0.0f    // top left 
 };
 
 unsigned int indices[] {
@@ -111,9 +115,10 @@ int main() {
     customShader.use();
     customShader.setInt("texture1", 0);
     customShader.setInt("texture2", 1);
+    customShader.setFloat("mixture", mixture);
 
     while (!glfwWindowShouldClose(window)) {
-        processInput(window);
+        processInput(window, customShader);
         // Background colour
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -136,13 +141,21 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow* window) {
+void processInput(GLFWwindow* window, Shader shader) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
 
     if (glfwGetKey(window, GLFW_KEY_F1) == GLFW_PRESS) {
         toggleWireframe();
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        changeMixture(UP, shader); 
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        changeMixture(DOWN, shader); 
     }
 }
 
@@ -155,5 +168,26 @@ void toggleWireframe() {
     else {
         wireframe = false;
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+}
+
+void changeMixture(DIRECTION key, Shader shader) {
+    switch (key) {
+    case UP:
+        if (mixture < 1.0f) {
+            mixture += 0.1f;
+        }
+        shader.setFloat("mixture", mixture);
+        break;
+    
+    case DOWN:
+        if (mixture > 0.0f) {
+            mixture -= 0.1f;
+        }
+        shader.setFloat("mixture", mixture);
+        break;
+        
+    default:
+        break;
     }
 }
