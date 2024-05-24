@@ -157,6 +157,8 @@ int main() {
     glm::mat4 model;
     glm::mat4 view;
     glm::mat4 projection;
+    projection = glm::mat4(1.0f);
+    projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 1.0f, 100.0f);
 
     int modelLoc = glGetUniformLocation(customShader.ID, "model");
     int viewLoc = glGetUniformLocation(customShader.ID, "view");
@@ -171,10 +173,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         view = glm::mat4(1.0f);
-        projection = glm::mat4(1.0f);
-
         view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 1.0f, 100.0f);
 
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
