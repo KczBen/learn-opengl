@@ -2,7 +2,7 @@
 
 ## Progress
 
-Current chapter: Coordinate Systems
+Current chapter: Camera
 
 - [x] Introduction
 - [ ] Getting Started
@@ -13,5 +13,5 @@ Current chapter: Coordinate Systems
   - [x] Shaders
   - [x] Textures
   - [x] Transformations
-  - [ ] Coordinate Systems
+  - [x] Coordinate Systems
   - [ ] Camera
