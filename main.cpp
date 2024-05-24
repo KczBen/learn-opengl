@@ -13,11 +13,23 @@ enum DIRECTION {UP, DOWN};
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window, Shader shader);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void toggleWireframe();
 void changeMixture(DIRECTION, Shader shader);
 
+bool firstFocus = true;
 bool wireframe = false;
 float mixture = 0.5f;
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f,  0.0f);
+
+float pitch = 0.0f;
+float yaw = -90.0f;
+float lastX = 400, lastY = 300;
 
 float vertices[] {
     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
@@ -98,7 +110,8 @@ int main() {
     }
 
     glViewport(0, 0, 800, 600);
-
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     // Texture loading
@@ -155,7 +168,6 @@ int main() {
     customShader.setFloat("mixture", mixture);
 
     glm::mat4 model;
-    glm::mat4 view;
     glm::mat4 projection;
     projection = glm::mat4(1.0f);
     projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 1.0f, 100.0f);
@@ -166,15 +178,27 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
+    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+    glm::vec3 worldPosY = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 cameraPosX = glm::normalize(glm::cross(worldPosY, cameraDirection));
+    glm::vec3 cameraPosY = glm::cross(cameraDirection, cameraPosX);
+
+    const float radius = 10.0f;
+
     while (!glfwWindowShouldClose(window)) {
+        // Update frame times
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         processInput(window, customShader);
         // Background colour
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        view = glm::mat4(1.0f);
-        view = glm::rotate(view, glm::radians(70.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        view = glm::translate(view, glm::vec3(-2.0f, -1.0f, -3.0f));
+        glm::mat4 view = glm::mat4(1.0f);        
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -185,18 +209,11 @@ int main() {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
         glBindVertexArray(VAO);
-        for(int i = 1; i < 11; i++) {
+        for(int i = 0; i < 10; i++) {
             model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i-1]);
+            model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i;
-            // Wonky but I guess it works
-            if (i % 3 == 0 || i == 1) {
-                model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            }
-
-            else {
-                model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            }
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             customShader.setMat4("model", model);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -214,6 +231,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 void processInput(GLFWwindow* window, Shader shader) {
+    float cameraSpeed = 2.5f * deltaTime;
+
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
@@ -228,6 +247,22 @@ void processInput(GLFWwindow* window, Shader shader) {
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
         changeMixture(DOWN, shader); 
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        cameraPos += cameraSpeed * cameraFront;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        cameraPos -= cameraSpeed * cameraFront;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     }
 }
 
@@ -262,4 +297,39 @@ void changeMixture(DIRECTION key, Shader shader) {
     default:
         break;
     }
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    if(firstFocus) {
+        lastX = xpos;
+        lastY = ypos;
+        firstFocus = false;
+    }
+    
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos;
+
+    lastX = xpos;
+    lastY = ypos;
+
+    const float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    if(pitch > 89.0f) {
+        pitch =  89.0f;
+    }
+
+    if(pitch < -89.0f) {
+        pitch = -89.0f;
+    }
+
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(direction);
 }
