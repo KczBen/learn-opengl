@@ -170,7 +170,7 @@ int main() {
     glm::mat4 model;
     glm::mat4 projection;
     projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 1.0f, 100.0f);
+    projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
 
     int modelLoc = glGetUniformLocation(customShader.ID, "model");
     int viewLoc = glGetUniformLocation(customShader.ID, "view");
@@ -191,6 +191,8 @@ int main() {
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+        std::cout << "Camera location: " << cameraPos.x << " " << cameraPos.y << " " << cameraPos.z << " " << std::endl;
+        std::cout << "\033[2J\033[1;1H";
 
         processInput(window, customShader);
         // Background colour
