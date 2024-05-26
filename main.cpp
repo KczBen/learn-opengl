@@ -192,6 +192,8 @@ int main() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         std::cout << "Camera location: " << cameraPos.x << " " << cameraPos.y << " " << cameraPos.z << " " << std::endl;
+        std::cout << "Frame time: " << deltaTime*1000 << "ms" << std::endl;
+        std::cout << "FPS: " << 1/deltaTime << std::endl;
         std::cout << "\033[2J\033[1;1H";
 
         processInput(window, customShader);
@@ -208,8 +210,8 @@ int main() {
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
+        // glActiveTexture(GL_TEXTURE1);
+        // glBindTexture(GL_TEXTURE_2D, texture2);
         glBindVertexArray(VAO);
         for(int i = 0; i < 10; i++) {
             model = glm::mat4(1.0f);
