@@ -22,6 +22,7 @@ bool wireframe = false;
 float mixture = 0.5f;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+float fov = 45.0f;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -169,8 +170,6 @@ int main() {
 
     glm::mat4 model;
     glm::mat4 projection;
-    projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
 
     int modelLoc = glGetUniformLocation(customShader.ID, "model");
     int viewLoc = glGetUniformLocation(customShader.ID, "view");
@@ -201,7 +200,9 @@ int main() {
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::mat4 view = glm::mat4(1.0f);        
+        glm::mat4 view = glm::mat4(1.0f); 
+        projection = glm::mat4(1.0f);       
+        projection = glm::perspective(glm::radians(fov), 800.0f/600.0f, 0.1f, 100.0f);
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -267,6 +268,14 @@ void processInput(GLFWwindow* window, Shader shader) {
 
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
+        fov = 15.0f;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE) {
+        fov = 45.0f;
     }
 }
 
