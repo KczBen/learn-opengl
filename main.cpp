@@ -177,11 +177,11 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
-    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-    glm::vec3 worldPosY = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 cameraPosX = glm::normalize(glm::cross(worldPosY, cameraDirection));
-    glm::vec3 cameraPosY = glm::cross(cameraDirection, cameraPosX);
+    // glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+    // glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+    // glm::vec3 worldPosY = glm::vec3(0.0f, 1.0f, 0.0f);
+    // glm::vec3 cameraPosX = glm::normalize(glm::cross(worldPosY, cameraDirection));
+    // glm::vec3 cameraPosY = glm::cross(cameraDirection, cameraPosX);
 
     const float radius = 10.0f;
 
@@ -211,8 +211,8 @@ int main() {
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
-        // glActiveTexture(GL_TEXTURE1);
-        // glBindTexture(GL_TEXTURE_2D, texture2);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
         glBindVertexArray(VAO);
         for(int i = 0; i < 10; i++) {
             model = glm::mat4(1.0f);
