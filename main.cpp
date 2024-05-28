@@ -26,11 +26,6 @@ float mixture = 0.5f;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f,  0.0f);
-
-
 float vertices[] {
     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
      0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -189,7 +184,7 @@ int main() {
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        std::cout << "Camera location: " << cameraPos.x << " " << cameraPos.y << " " << cameraPos.z << " " << std::endl;
+        std::cout << "Camera location: " << camera.position.x << " " << camera.position.y << " " << camera.position.z << " " << std::endl;
         std::cout << "Frame time: " << deltaTime*1000 << "ms" << std::endl;
         std::cout << "FPS: " << 1/deltaTime << std::endl;
         std::cout << "\033[2J\033[1;1H";
