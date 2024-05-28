@@ -87,12 +87,12 @@ class Camera {
             pitch += yOffset;
 
             if (constrainPitch) {
-                if (pitch >= 90.0f) {
-                    pitch = 90.0f;
+                if (pitch >= 89.9f) {
+                    pitch = 89.9f;
                 }
 
-                if (pitch <= -90.0f) {
-                    pitch = -90.0f;
+                if (pitch <= -89.9) {
+                    pitch = -89.9f;
                 }
             }
 
