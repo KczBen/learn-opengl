@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <camera.hpp>
 
 enum DIRECTION {UP, DOWN};
 
@@ -17,20 +18,18 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void toggleWireframe();
 void changeMixture(DIRECTION, Shader shader);
 
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 bool firstFocus = true;
+float lastX = 400, lastY = 300;
 bool wireframe = false;
 float mixture = 0.5f;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-float fov = 45.0f;
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f,  0.0f);
 
-float pitch = 0.0f;
-float yaw = -90.0f;
-float lastX = 400, lastY = 300;
 
 float vertices[] {
     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
@@ -202,8 +201,8 @@ int main() {
 
         glm::mat4 view = glm::mat4(1.0f); 
         projection = glm::mat4(1.0f);       
-        projection = glm::perspective(glm::radians(fov), 800.0f/600.0f, 0.1f, 100.0f);
-        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        projection = glm::perspective(glm::radians(camera.FoV), 800.0f/600.0f, 0.1f, 100.0f);
+        view = camera.getViewMatrix();
 
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -255,27 +254,27 @@ void processInput(GLFWwindow* window, Shader shader) {
     }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        cameraPos += cameraSpeed * cameraFront;
+        camera.processKeyboard(FORWARD, deltaTime);
     }
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        camera.processKeyboard(LEFT, deltaTime);
     }
 
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        cameraPos -= cameraSpeed * cameraFront;
+        camera.processKeyboard(BACKWARD, deltaTime);
     }
 
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        camera.processKeyboard(RIGHT, deltaTime);
     }
 
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
-        fov = 15.0f;
+        camera.FoV = 15.0f;
     }
 
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE) {
-        fov = 45.0f;
+        camera.FoV = 45.0f;
     }
 }
 
@@ -312,37 +311,22 @@ void changeMixture(DIRECTION key, Shader shader) {
     }
 }
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-    if(firstFocus) {
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
+
+    if (firstFocus)
+    {
         lastX = xpos;
         lastY = ypos;
         firstFocus = false;
     }
-    
+
     float xoffset = xpos - lastX;
     float yoffset = lastY - ypos;
 
     lastX = xpos;
     lastY = ypos;
 
-    const float sensitivity = 0.1f;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
-
-    yaw += xoffset;
-    pitch += yoffset;
-
-    if(pitch > 89.0f) {
-        pitch =  89.0f;
-    }
-
-    if(pitch < -89.0f) {
-        pitch = -89.0f;
-    }
-
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraFront = glm::normalize(direction);
+    camera.processMouse(xoffset, yoffset);
 }
