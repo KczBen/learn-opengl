@@ -87,6 +87,8 @@ class Camera {
             pitch += yOffset;
 
             if (constrainPitch) {
+                // Can't look straight up. Oh well!
+                // Camera flips at 90°
                 if (pitch >= 89.9f) {
                     pitch = 89.9f;
                 }

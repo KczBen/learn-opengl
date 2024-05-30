@@ -16,7 +16,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window, Shader shader);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void toggleWireframe();
-void changeMixture(DIRECTION, Shader shader);
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 bool firstFocus = true;
@@ -240,14 +239,6 @@ void processInput(GLFWwindow* window, Shader shader) {
         toggleWireframe();
     }
 
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        changeMixture(UP, shader); 
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        changeMixture(DOWN, shader); 
-    }
-
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         camera.processKeyboard(FORWARD, deltaTime);
     }
@@ -282,27 +273,6 @@ void toggleWireframe() {
     else {
         wireframe = false;
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    }
-}
-
-void changeMixture(DIRECTION key, Shader shader) {
-    switch (key) {
-    case UP:
-        if (mixture < 1.0f) {
-            mixture += 0.1f;
-        }
-        shader.setFloat("mixture", mixture);
-        break;
-    
-    case DOWN:
-        if (mixture > 0.0f) {
-            mixture -= 0.1f;
-        }
-        shader.setFloat("mixture", mixture);
-        break;
-        
-    default:
-        break;
     }
 }
 
