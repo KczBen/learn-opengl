@@ -2,10 +2,10 @@
 
 ## Progress
 
-Current chapter: Camera
+Current chapter: Colors
 
 - [x] Introduction
-- [ ] Getting Started
+- [x] Getting Started
   - [x] OpenGL
   - [x] Creating a window
   - [x] Hello Window
@@ -14,4 +14,11 @@ Current chapter: Camera
   - [x] Textures
   - [x] Transformations
   - [x] Coordinate Systems
-  - [ ] Camera
+  - [x] Camera
+- [ ] Lighting
+  - [ ] Colors
+  - [ ] Basic Lighting
+  - [ ] Materials
+  - [ ] Light maps
+  - [ ] Light casters
+  - [ ] Multiple lights
