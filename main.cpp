@@ -171,7 +171,7 @@ int main() {
         std::cout << "\033[2J\033[1;1H";
 
         processInput(window, cubeShader);
-        // Background colour - No world light so black
+        // Background colour
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
