@@ -170,12 +170,6 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
-    // glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-    // glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-    // glm::vec3 worldPosY = glm::vec3(0.0f, 1.0f, 0.0f);
-    // glm::vec3 cameraPosX = glm::normalize(glm::cross(worldPosY, cameraDirection));
-    // glm::vec3 cameraPosY = glm::cross(cameraDirection, cameraPosX);
-
     const float radius = 10.0f;
 
     while (!glfwWindowShouldClose(window)) {
