@@ -2,7 +2,7 @@
 
 ## Progress
 
-Current chapter: Colors
+Current chapter: Basic Lighting
 
 - [x] Introduction
 - [x] Getting Started
@@ -16,7 +16,7 @@ Current chapter: Colors
   - [x] Coordinate Systems
   - [x] Camera
 - [ ] Lighting
-  - [ ] Colors
+  - [x] Colors
   - [ ] Basic Lighting
   - [ ] Materials
   - [ ] Light maps
