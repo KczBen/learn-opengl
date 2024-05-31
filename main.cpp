@@ -21,9 +21,10 @@ Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 bool firstFocus = true;
 float lastX = 400, lastY = 300;
 bool wireframe = false;
-float mixture = 0.5f;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+
+glm::vec3 lightPosition(1.2f, 1.0f, 2.0f);
 
 float vertices[] {
     -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
@@ -126,8 +127,10 @@ int main() {
     // Create vertex buffer, vertex array and element buffer
     unsigned int VBO;
     unsigned int VAO;
+    unsigned int lightVAO;
 
     glGenVertexArrays(1, &VAO);
+    glGenVertexArrays(1, &lightVAO);
     glGenBuffers(1, &VBO);
 
     glBindVertexArray(VAO);
@@ -138,26 +141,24 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    glBindVertexArray(lightVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
     // Texture coordinates
     // glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3*sizeof(float)));
     // glEnableVertexAttribArray(1);
 
-    Shader customShader("../shaders/vertex.shader", "../shaders/fragment.shader");
-    customShader.use();
-    customShader.setInt("texture1", 0);
-    customShader.setInt("texture2", 1);
-    customShader.setFloat("mixture", mixture);
+    Shader cubeShader("../shaders/vertex.shader", "../shaders/fragment.shader");
+    Shader lightShader("../shaders/vertex.shader", "../shaders/light.shader");
 
     glm::mat4 model;
     glm::mat4 projection;
-
-    int modelLoc = glGetUniformLocation(customShader.ID, "model");
-    int viewLoc = glGetUniformLocation(customShader.ID, "view");
-    int projectionLoc = glGetUniformLocation(customShader.ID, "projection");
-
+    glm::mat4 view;
+    projection = glm::mat4(1.0f);       
+    
     glEnable(GL_DEPTH_TEST);
-
-    const float radius = 10.0f;
 
     while (!glfwWindowShouldClose(window)) {
         // Update frame times
@@ -169,29 +170,36 @@ int main() {
         std::cout << "FPS: " << 1/deltaTime << std::endl;
         std::cout << "\033[2J\033[1;1H";
 
-        processInput(window, customShader);
-        // Background colour
-        glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+        processInput(window, cubeShader);
+        // Background colour - No world light so black
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::mat4 view = glm::mat4(1.0f); 
-        projection = glm::mat4(1.0f);       
-        projection = glm::perspective(glm::radians(camera.FoV), 800.0f/600.0f, 0.1f, 100.0f);
-        view = camera.getViewMatrix();
-
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
-        glBindVertexArray(VAO);
+        // Cube
+        view = glm::mat4(1.0f); 
         model = glm::mat4(1.0f);
-        customShader.setMat4("model", model);
+        view = camera.getViewMatrix();
+        projection = glm::perspective(glm::radians(camera.FoV), 800.0f/600.0f, 0.1f, 100.0f);
 
+        cubeShader.use();
+        cubeShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+        cubeShader.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
+        cubeShader.setMat4("model", model);
+        cubeShader.setMat4("view", view);
+        cubeShader.setMat4("projection", projection);
+        glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // Light
+        lightShader.use();
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPosition);
+        model = glm::scale(model, glm::vec3(0.2f)); 
+        lightShader.setMat4("model", model);
+        lightShader.setMat4("view", view);
+        lightShader.setMat4("projection", projection);
+        glBindVertexArray(lightVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);	
 
         glfwSwapBuffers(window);
         glfwPollEvents();
