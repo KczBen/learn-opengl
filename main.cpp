@@ -139,8 +139,8 @@ int main() {
     glEnableVertexAttribArray(0);
 
     // Texture coordinates
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(1);
+    // glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3*sizeof(float)));
+    // glEnableVertexAttribArray(1);
 
     Shader customShader("../shaders/vertex.shader", "../shaders/fragment.shader");
     customShader.use();
