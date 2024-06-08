@@ -12,18 +12,21 @@
 
 enum DIRECTION {UP, DOWN};
 
+// Function prototypes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window, Shader shader);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void toggleWireframe();
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+// Frame timing and window information
 bool firstFocus = true;
 float lastX = 400, lastY = 300;
 bool wireframe = false;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+// Scene information
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 glm::vec3 lightPosition(1.2f, 1.0f, 2.0f);
 
 float vertices[] = {
@@ -156,7 +159,7 @@ int main() {
     glm::mat4 model;
     glm::mat4 projection;
     glm::mat4 view;
-    projection = glm::mat4(1.0f);       
+    projection = glm::mat4(1.0f);
     
     glEnable(GL_DEPTH_TEST);
 
@@ -188,6 +191,7 @@ int main() {
         cubeShader.setMat4("view", view);
         cubeShader.setMat4("projection", projection);
         cubeShader.setVec3("lightPos", lightPosition);
+        cubeShader.setVec3("viewPos", camera.position);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -265,8 +269,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
 
-    if (firstFocus)
-    {
+    if (firstFocus) {
         lastX = xpos;
         lastY = ypos;
         firstFocus = false;
