@@ -191,7 +191,6 @@ int main() {
         cubeShader.setMat4("view", view);
         cubeShader.setMat4("projection", projection);
         cubeShader.setVec3("lightPos", lightPosition);
-        cubeShader.setVec3("viewPos", camera.position);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
