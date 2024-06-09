@@ -104,7 +104,7 @@ int main() {
     unsigned char* data;
 
     // Set texture parameters
-    data = stbi_load("../textures/container.jpg", &width, &height, &channels, 0);
+    /* data = stbi_load("../textures/container.jpg", &width, &height, &channels, 0);
     unsigned int texture1;
     glGenTextures(1, &texture1);
     glBindTexture(GL_TEXTURE_2D, texture1);
@@ -125,7 +125,7 @@ int main() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_image_free(data);
+    stbi_image_free(data); */
 
     // Create vertex buffer, vertex array and element buffer
     unsigned int VBO;
