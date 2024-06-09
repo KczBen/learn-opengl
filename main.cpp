@@ -265,8 +265,8 @@ void toggleWireframe() {
 }
 
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
-    float xpos = static_cast<float>(xposIn);
-    float ypos = static_cast<float>(yposIn);
+    float xpos = float(xposIn);
+    float ypos = float(yposIn);
 
     if (firstFocus) {
         lastX = xpos;
