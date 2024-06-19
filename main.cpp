@@ -185,8 +185,13 @@ int main() {
         projection = glm::perspective(glm::radians(camera.FoV), 800.0f/600.0f, 0.1f, 100.0f);
 
         cubeShader.use();
-        cubeShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-        cubeShader.setVec3("lightColor",  1.0f, 1.0f, 1.0f);
+        cubeShader.setVec3("material.ambient", 1.0f, 0.5f, 0.31f);
+        cubeShader.setVec3("material.diffuseColor", 1.0f, 0.5f, 0.31f);
+        cubeShader.setVec3("material.specularColor", 0.5f, 0.5f, 0.5f);
+        cubeShader.setFloat("material.shininess", 32.0f);
+        cubeShader.setVec3("light.ambient",  0.2f, 0.2f, 0.2f);
+        cubeShader.setVec3("light.diffuse",  0.5f, 0.5f, 0.5f);
+        cubeShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f); 
         cubeShader.setMat4("model", model);
         cubeShader.setMat4("view", view);
         cubeShader.setMat4("projection", projection);
