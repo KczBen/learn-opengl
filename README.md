@@ -2,7 +2,7 @@
 
 ## Progress
 
-Current chapter: Basic Lighting
+Current chapter: Light casters
 
 - [x] Introduction
 - [x] Getting Started
@@ -17,8 +17,8 @@ Current chapter: Basic Lighting
   - [x] Camera
 - [ ] Lighting
   - [x] Colors
-  - [ ] Basic Lighting
-  - [ ] Materials
-  - [ ] Light maps
+  - [x] Basic Lighting
+  - [x] Materials
+  - [x] Light maps
   - [ ] Light casters
   - [ ] Multiple lights
