@@ -11,6 +11,8 @@
 #include <camera.hpp>
 
 enum DIRECTION {UP, DOWN};
+const int WIDTH = 800;
+const int HEIGHT = 600;
 
 // Function prototypes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -20,7 +22,7 @@ void toggleWireframe();
 
 // Frame timing and window information
 bool firstFocus = true;
-float lastX = 400, lastY = 300;
+float lastX = WIDTH/2, lastY = HEIGHT/2;
 bool wireframe = false;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -80,7 +82,7 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL Tutorial", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL Tutorial", NULL, NULL);
     
     if (window == NULL) {
         std::cout << "Failed to create window\n";
@@ -95,7 +97,7 @@ int main() {
         return 1;
     }
 
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, WIDTH, HEIGHT);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
