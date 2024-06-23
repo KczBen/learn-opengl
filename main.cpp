@@ -11,8 +11,8 @@
 #include <camera.hpp>
 
 enum DIRECTION {UP, DOWN};
-const int WIDTH = 800;
-const int HEIGHT = 600;
+const int WINDOW_WIDTH = 1280;
+const int WINDOW_HEIGHT = 720;
 
 // Function prototypes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -22,7 +22,7 @@ void toggleWireframe();
 
 // Frame timing and window information
 bool firstFocus = true;
-float lastX = WIDTH/2, lastY = HEIGHT/2;
+float lastX = WINDOW_WIDTH/2, lastY = WINDOW_HEIGHT/2;
 bool wireframe = false;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -82,7 +82,7 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "OpenGL Tutorial", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL Tutorial", NULL, NULL);
     
     if (window == NULL) {
         std::cout << "Failed to create window\n";
@@ -97,7 +97,7 @@ int main() {
         return 1;
     }
 
-    glViewport(0, 0, WIDTH, HEIGHT);
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -190,7 +190,7 @@ int main() {
         view = glm::mat4(1.0f); 
         model = glm::mat4(1.0f);
         view = camera.getViewMatrix();
-        projection = glm::perspective(glm::radians(camera.FoV), 800.0f/600.0f, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(camera.FoV), (float)WINDOW_WIDTH/(float)WINDOW_HEIGHT, 0.1f, 100.0f);
 
         cubeShader.use();
         cubeShader.setInt("material.diffuse", 0);
