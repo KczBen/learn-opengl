@@ -261,10 +261,20 @@ void processInput(GLFWwindow* window, Shader shader) {
 
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) {
         camera.FoV = 15.0f;
+        camera.mouseSensitivity = SENSITIVITY * 15.0f/45.0f;
     }
 
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE) {
         camera.FoV = 45.0f;
+        camera.mouseSensitivity = SENSITIVITY;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+        camera.movementSpeed = SPEED * 2.0f;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE) {
+        camera.movementSpeed = SPEED;
     }
 }
 
